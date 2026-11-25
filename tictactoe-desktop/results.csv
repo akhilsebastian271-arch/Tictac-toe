@@ -1,0 +1,5 @@
+match,timestamp,player_1,player_2,mode,result,winner
+1,2026-11-25 10:43:40,Player 1,Player 2,Classic,Player 2 won,O
+2,2026-11-25 10:50:46,Akshara,Anabel,Classic,Anabel won,O
+3,2026-11-25 16:56:47,Player 1,Player 2,Classic,Player 1 won,X
+4,2026-11-25 16:56:58,Player 1,Player 2,Classic,Player 2 won,O

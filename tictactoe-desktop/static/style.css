@@ -1,0 +1,716 @@
+
+:root {
+  --x: #ff3fd8;
+  --o: #22e5ff;
+  --card: #150b33;
+  --edge: #3b2a73;
+  --board: #241254;
+  --board-edge: #6d4fe0;
+  --grid: #a08cff;
+  --muted: #b9a8ff;
+  --gold: #ffe27a;
+  --font: "Baloo 2", "Fredoka", "Nunito", "Arial Rounded MT Bold", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: var(--font);
+  color: #fff;
+  background:
+    radial-gradient(circle at 8% 15%, rgba(255, 63, 216, .28), transparent 40%),
+    radial-gradient(circle at 95% 95%, rgba(34, 110, 255, .35), transparent 45%),
+    linear-gradient(165deg, #2b0a55, #170a42 50%, #0b1a55);
+  background-attachment: fixed;
+  transition: background .35s ease;
+}
+
+button { font-family: inherit; }
+
+.app {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 560px) 250px;
+  gap: 30px;
+  padding: 24px;
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .12s, filter .12s, box-shadow .12s, background .25s, border-color .25s;
+}
+.btn:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn.gold    { background: var(--gold); color: #3a2a00; box-shadow: 0 4px 0 #b38f1a; width: 100%; margin-top: 6px; }
+.btn.primary { background: linear-gradient(180deg, #d14bff, #a02ce0); border: 2px solid #ff7be8;
+               box-shadow: 0 0 22px rgba(255, 107, 240, .5); width: 100%; padding: 14px; font-size: 20px; }
+.btn.dark    { background: var(--card); border: 2px solid var(--edge); color: var(--muted); width: 100%; padding: 14px; font-size: 20px; }
+.btn.style   { background: var(--card); border: 2px solid #f5c542; flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+.dots { display: inline-flex; align-items: center; }
+.dots i {
+  display: inline-block; width: 13px; height: 13px; border-radius: 50%; margin-right: 5px;
+}
+.dots i:nth-child(1) { background: var(--x); }
+.dots i:nth-child(2) { background: var(--o); }
+
+.icon-btn {
+  width: 50px; flex: none;
+  display: grid; place-items: center;
+  background: var(--card);
+  color: #7ff3c8;
+  border: 2px solid var(--edge);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: filter .12s, border-color .12s, color .12s, background .25s;
+}
+.icon-btn:hover { filter: brightness(1.25); border-color: var(--grid); }
+.icon-btn .mutex { display: none; }
+.icon-btn.muted { color: var(--muted); }
+.icon-btn.muted .waves { display: none; }
+.icon-btn.muted .mutex { display: inline; }
+
+/* ---------------------------------------------------------------- left column */
+.left { display: flex; flex-direction: column; gap: 14px; }
+.tools { display: flex; gap: 10px; }
+
+.title {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px #fff, 0 0 14px var(--x), 0 0 30px var(--x);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  min-height: 80px;
+  background: var(--card);
+  border: 2px solid var(--edge);
+  border-radius: 18px;
+  transition: border-color .2s, box-shadow .2s, background .25s;
+}
+.card .name {
+  font-size: 22px; font-weight: 800; color: var(--muted); cursor: text; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: none;
+}
+.card .score { margin-left: auto; font-size: 34px; font-weight: 800; color: var(--c); }
+.card.active {
+  border-color: var(--c);
+  box-shadow: 0 0 0 1px var(--c), 0 0 26px color-mix(in srgb, var(--c) 55%, transparent);
+}
+.card.active .name, .card.active .score { color: #fff; }
+.card .icon { filter: none; }
+.card.active .icon { filter: drop-shadow(0 0 6px var(--c)); }
+
+.name-input {
+  font: 800 20px var(--font);
+  width: 9.5em; min-width: 0;
+  background: var(--card);
+  color: #fff;
+  border: 2px solid var(--c);
+  border-radius: 8px;
+  padding: 2px 8px;
+  outline: none;
+}
+
+.draws { text-align: center; color: var(--muted); font-weight: 800; font-size: 17px; margin: -6px 0; }
+.draws b { color: #fff; margin-left: 4px; }
+
+.status {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-top: 6px;
+  text-shadow: 0 0 8px var(--c, var(--x)), 0 0 22px var(--c, var(--x));
+}
+.sub { text-align: center; color: var(--muted); font-size: 13px; margin-top: -8px; min-height: 18px; }
+
+/* ---------------------------------------------------------------- marks (X / O) */
+.mark {
+  --t: .9em;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58%;
+  aspect-ratio: 1;
+  flex: none;
+  pointer-events: none;
+  z-index: 1;
+  filter: drop-shadow(0 0 .4em var(--c)) drop-shadow(0 0 1em color-mix(in srgb, var(--c) 60%, transparent));
+}
+.mark.x { --c: var(--x); }
+.mark.o { --c: var(--o); }
+
+/* Default CSS X and O (used when no custom SVG is injected) */
+.mark.css-mark.x::before, .mark.css-mark.x::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--t); height: 141%;
+  border-radius: var(--t);
+  background: var(--c);
+}
+.mark.css-mark.x::before { transform: translate(-50%, -50%) rotate(45deg); }
+.mark.css-mark.x::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+.mark.css-mark.o { border: var(--t) solid var(--c); border-radius: 50%; }
+
+.mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mark.icon { --t: 5px; width: 32px; height: 32px; font-size: 10px; }
+
+.mark.pop   { animation: pop .28s cubic-bezier(.2, 1.7, .4, 1); }
+.mark.win   { animation: winpulse .7s ease-in-out infinite alternate; }
+.mark.ghost { opacity: 0; filter: none; transition: opacity .12s; }
+
+@keyframes pop      { from { transform: scale(.25); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes winpulse { from { transform: scale(1); } to { transform: scale(1.12); } }
+
+/* ---------------------------------------------------------------- board */
+.holder {
+  position: relative;
+  width: min(100%, 560px);
+  aspect-ratio: 1;
+  padding: 8%;
+  background: var(--board);
+  border: 3px solid var(--board-edge);
+  border-radius: 34px;
+  box-shadow: 0 0 34px rgba(109, 79, 224, .6), inset 0 0 40px rgba(0, 0, 0, .25);
+  transition: background .3s, border-color .3s, box-shadow .3s, border-radius .3s;
+}
+.board {
+  --lw: 5px;
+  width: 100%; height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+.cell:disabled { cursor: default; }
+.cell:not(:disabled):hover .ghost { opacity: .32; }
+.cell:focus-visible { outline: 2px solid var(--gold); }
+
+/* glowing grid lines drawn between cells */
+.cell.r::after, .cell.b::before {
+  content: "";
+  position: absolute;
+  background: var(--grid);
+  border-radius: 4px;
+  box-shadow: 0 0 10px var(--grid), 0 0 24px rgba(160, 140, 255, .55);
+  z-index: 0;
+}
+.cell.r::after  { top: 0; bottom: 0; right: calc(var(--lw) / -2); width: var(--lw); }
+.cell.b::before { left: 0; right: 0; bottom: calc(var(--lw) / -2); height: var(--lw); }
+
+.strike {
+  position: absolute;
+  left: 8%; top: 8%; width: 84%; height: 84%;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 0 8px var(--c)) drop-shadow(0 0 18px var(--c));
+}
+.strike line { stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .35s ease-out forwards; }
+.strike .glow { stroke: var(--c); stroke-width: .13; }
+.strike .core { stroke: #fff; stroke-width: .05; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* ---------------------------------------------------------------- right column */
+.right { display: flex; flex-direction: column; justify-content: center; gap: 14px; align-self: stretch; }
+
+/* ---------------------------------------------------------------- win pop-up */
+.modal {
+  position: fixed; inset: 0;
+  z-index: 40;
+  display: grid; place-items: center;
+  padding: 20px;
+  background: rgba(8, 4, 24, .65);
+  backdrop-filter: blur(4px);
+  animation: fade .2s ease-out;
+}
+.modal-card {
+  position: relative;
+  width: min(100%, 560px);
+  padding: 28px 22px 24px;
+  text-align: center;
+  background: linear-gradient(180deg, #3a1a86, #231150);
+  border: 2px solid var(--o);
+  border-radius: 24px;
+  box-shadow: 0 0 0 4px rgba(34, 229, 255, .12), 0 0 46px rgba(34, 229, 255, .65), inset 0 0 30px rgba(34, 229, 255, .12);
+  animation: modalpop .42s cubic-bezier(.2, 1.5, .4, 1);
+}
+.modal-card h2 {
+  margin: 4px 0 22px;
+  font-size: clamp(32px, 7vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, .55), 0 0 26px var(--o);
+}
+.modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 46px; height: 46px;
+  font-size: 30px; line-height: 1;
+  color: #fff;
+  background: rgba(255, 255, 255, .12);
+  border: 0; border-radius: 12px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.modal-close:hover { background: rgba(255, 255, 255, .25); }
+.btn.next {
+  width: 100%;
+  padding: 12px;
+  font-size: clamp(24px, 5.5vw, 36px);
+  color: #062a3a;
+  background: linear-gradient(180deg, #5af2ff, #1ab9ea);
+  box-shadow: 0 6px 0 #0e7fa8, 0 0 24px rgba(34, 229, 255, .45);
+  border-radius: 18px;
+}
+@keyframes fade     { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalpop { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+#confetti {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* ================================================================ THEME 2: MINECRAFT */
+body[data-theme="minecraft"] {
+  --x: #ff3b3b;
+  --o: #3b82f6;
+  --card: #373737;
+  --edge: #1e1e1e;
+  --board: #232326;
+  --board-edge: #4a3219;
+  --grid: #ff5500;
+  --muted: #c6c6c6;
+  --gold: #8b6914;
+  --font: "Silkscreen", monospace;
+  background:
+    linear-gradient(rgba(12, 12, 14, 0.72), rgba(12, 12, 14, 0.85)),
+    repeating-linear-gradient(0deg, #1f1f23 0px, #1f1f23 24px, #17171a 24px, #17171a 48px),
+    repeating-linear-gradient(90deg, #252529 0px, #252529 24px, #19191d 24px, #19191d 48px);
+  background-blend-mode: normal, multiply, normal;
+}
+body[data-theme="minecraft"] .title {
+  color: #ffaa00;
+  font-size: 30px;
+  text-shadow: 3px 3px 0 #3f2600, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+}
+body[data-theme="minecraft"] .btn,
+body[data-theme="minecraft"] .icon-btn,
+body[data-theme="minecraft"] .card,
+body[data-theme="minecraft"] .holder,
+body[data-theme="minecraft"] .modal-card,
+body[data-theme="minecraft"] .cell {
+  border-radius: 4px;
+}
+body[data-theme="minecraft"] .btn,
+body[data-theme="minecraft"] .icon-btn {
+  border: 3px solid #141414;
+  box-shadow: inset 3px 3px 0 rgba(255,255,255,0.28), inset -3px -3px 0 rgba(0,0,0,0.45);
+  font-size: 15px;
+}
+body[data-theme="minecraft"] .btn.style {
+  background: #9e7314;
+  color: #fff;
+  text-shadow: 2px 2px 0 #3b2800;
+}
+body[data-theme="minecraft"] .btn.gold {
+  background: #5c4028;
+  color: #f3e5ab;
+  text-shadow: 2px 2px 0 #26180c;
+}
+body[data-theme="minecraft"] .btn.primary {
+  background: #7e22ce;
+  border-color: #2e1065;
+  text-shadow: 2px 2px 0 #2e1065;
+}
+body[data-theme="minecraft"] .btn.dark {
+  background: #4b4b4b;
+  color: #e5e5e5;
+  text-shadow: 2px 2px 0 #1f1f1f;
+}
+body[data-theme="minecraft"] .card {
+  background: #484848;
+  border: 3px solid #161616;
+  box-shadow: inset 3px 3px 0 #6d6d6d, inset -3px -3px 0 #292929;
+}
+body[data-theme="minecraft"] .card .name { font-size: 16px; color: #fff; text-shadow: 2px 2px 0 #1d1d1d; }
+body[data-theme="minecraft"] .card .score { font-size: 28px; text-shadow: 2px 2px 0 #141414; }
+body[data-theme="minecraft"] .card.active {
+  border-color: #ffaa00;
+  box-shadow: inset 3px 3px 0 #6d6d6d, inset -3px -3px 0 #292929, 0 0 18px rgba(255, 170, 0, 0.55);
+}
+body[data-theme="minecraft"] .status {
+  color: #a3e635;
+  font-size: 21px;
+  text-shadow: 2px 2px 0 #1a2e05;
+}
+body[data-theme="minecraft"] .holder {
+  background: #2b2b2f;
+  border: 14px solid #4d3319;
+  outline: 4px solid #1c1208;
+  box-shadow: inset 0 0 0 4px #382411, 0 14px 35px rgba(0,0,0,0.8);
+}
+body[data-theme="minecraft"] .cell {
+  background: rgba(18, 18, 22, 0.55);
+  margin: 3px;
+}
+body[data-theme="minecraft"] .cell.r::after,
+body[data-theme="minecraft"] .cell.b::before {
+  background: linear-gradient(90deg, #ff3b00, #ff9900, #ff3b00);
+  box-shadow: 0 0 12px #ff5500, 0 0 22px #ff2200;
+  border-radius: 0;
+}
+body[data-theme="minecraft"] .modal-card {
+  background: #3b3b3b;
+  border: 4px solid #141414;
+  box-shadow: inset 4px 4px 0 #686868, inset -4px -4px 0 #222, 0 20px 50px rgba(0,0,0,0.85);
+}
+body[data-theme="minecraft"] .modal-card h2 {
+  color: #ffaa00;
+  font-size: clamp(24px, 5vw, 36px);
+  text-shadow: 3px 3px 0 #2b1a00;
+}
+body[data-theme="minecraft"] .btn.next {
+  background: #4ade80;
+  color: #052e16;
+  border-radius: 4px;
+  font-size: clamp(18px, 4vw, 26px);
+  box-shadow: inset 3px 3px 0 #86efac, inset -3px -3px 0 #166534;
+}
+
+/* ================================================================ THEME 3: AMONG US */
+body[data-theme="amongus"] {
+  --x: #ef4444;
+  --o: #3b82f6;
+  --card: #1e293b;
+  --edge: #475569;
+  --board: #334155;
+  --board-edge: #64748b;
+  --grid: #ef4444;
+  --muted: #cbd5e1;
+  --gold: #eab308;
+  --font: "Baloo 2", system-ui, sans-serif;
+  background:
+    radial-gradient(2px 2px at 12% 18%, #fff, transparent),
+    radial-gradient(2px 2px at 28% 72%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 45% 15%, #93c5fd, transparent),
+    radial-gradient(2px 2px at 78% 25%, #fff, transparent),
+    radial-gradient(2px 2px at 88% 82%, #fde047, transparent),
+    radial-gradient(1.5px 1.5px at 65% 65%, #fff, transparent),
+    radial-gradient(circle at 80% 35%, rgba(59, 130, 246, 0.22), transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.2), transparent 45%),
+    linear-gradient(180deg, #050811 0%, #0b1120 100%);
+  background-attachment: fixed;
+}
+body[data-theme="amongus"] .title {
+  color: #ffffff;
+  text-shadow: 0 4px 0 #991b1b, 0 0 18px rgba(239, 68, 68, 0.7);
+}
+body[data-theme="amongus"] .btn.style {
+  background: #1e293b;
+  border: 3px solid #94a3b8;
+  box-shadow: inset 0 -3px 0 #0f172a;
+}
+body[data-theme="amongus"] .btn.gold {
+  background: repeating-linear-gradient(-45deg, #eab308, #eab308 10px, #ca8a04 10px, #ca8a04 20px);
+  color: #111827;
+  border: 2px solid #0f172a;
+  box-shadow: 0 4px 0 #713f12;
+}
+body[data-theme="amongus"] .btn.primary {
+  background: linear-gradient(180deg, #ec4899, #be185d);
+  border: 2px solid #f9a8d4;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+}
+body[data-theme="amongus"] .btn.dark {
+  background: #1e293b;
+  border: 2px solid #64748b;
+  color: #e2e8f0;
+}
+body[data-theme="amongus"] .card {
+  background: linear-gradient(180deg, #273549, #182232);
+  border: 3px solid #64748b;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.15);
+}
+body[data-theme="amongus"] .card.active {
+  border-color: var(--c);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--c) 65%, transparent);
+}
+body[data-theme="amongus"] .status {
+  color: #38bdf8;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+body[data-theme="amongus"] .holder {
+  background: linear-gradient(145deg, #3b495e, #242f40);
+  border: 8px solid #64748b;
+  outline: 3px solid #0f172a;
+  border-radius: 26px;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 15px 40px rgba(0,0,0,0.75);
+}
+body[data-theme="amongus"] .cell {
+  background: rgba(15, 23, 42, 0.45);
+  border: 2px solid rgba(148, 163, 184, 0.22);
+  margin: 4px;
+  border-radius: 12px;
+}
+body[data-theme="amongus"] .cell.r::after {
+  background: linear-gradient(180deg, #ef4444, #3b82f6);
+  box-shadow: 0 0 10px #ef4444;
+}
+body[data-theme="amongus"] .cell.b::before {
+  background: linear-gradient(90deg, #ef4444, #3b82f6);
+  box-shadow: 0 0 10px #3b82f6;
+}
+body[data-theme="amongus"] .modal-card {
+  background: linear-gradient(180deg, #1e293b, #0f172a);
+  border: 3px solid #ef4444;
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.55);
+}
+body[data-theme="amongus"] .btn.next {
+  background: linear-gradient(180deg, #38bdf8, #0284c7);
+  color: #fff;
+  box-shadow: 0 5px 0 #0369a1;
+}
+
+/* ================================================================ THEME 4: CLASH OF CLANS */
+body[data-theme="clash"] {
+  --x: #ef4444;
+  --o: #38bdf8;
+  --card: #44403c;
+  --edge: #d97706;
+  --board: #65a30d;
+  --board-edge: #b45309;
+  --grid: #d946ef;
+  --muted: #fef3c7;
+  --gold: #92400e;
+  --font: "Baloo 2", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 50% 45%, #84cc16 0%, #4d7c0f 55%, #365314 100%);
+  background-attachment: fixed;
+}
+body[data-theme="clash"] .title {
+  color: #fde047;
+  text-shadow: 0 3px 0 #78350f, -2px -2px 0 #451a03, 2px -2px 0 #451a03, -2px 2px 0 #451a03, 2px 2px 0 #451a03;
+}
+body[data-theme="clash"] .btn {
+  border: 3px solid #292524;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.65);
+}
+body[data-theme="clash"] .btn.style {
+  background: linear-gradient(180deg, #92400e, #78350f);
+  border-color: #f59e0b;
+  color: #fef3c7;
+}
+body[data-theme="clash"] .btn.gold {
+  background: linear-gradient(180deg, #b45309, #78350f);
+  border-color: #f59e0b;
+  color: #fef3c7;
+  box-shadow: 0 4px 0 #451a03;
+}
+body[data-theme="clash"] .btn.primary {
+  background: linear-gradient(180deg, #c026d3, #86198f);
+  border-color: #f0abfc;
+  box-shadow: 0 4px 0 #4a044e, 0 0 18px rgba(217, 70, 239, 0.5);
+}
+body[data-theme="clash"] .btn.dark {
+  background: linear-gradient(180deg, #57534e, #44403c);
+  border-color: #a8a29e;
+  color: #fafaf9;
+  box-shadow: 0 4px 0 #292524;
+}
+body[data-theme="clash"] .card {
+  background: linear-gradient(180deg, #57534e, #3f3b37);
+  border: 3px solid #f59e0b;
+  box-shadow: 0 5px 0 #292524;
+}
+body[data-theme="clash"] .card.active {
+  border-color: #fde047;
+  box-shadow: 0 5px 0 #292524, 0 0 22px rgba(253, 224, 71, 0.7);
+}
+body[data-theme="clash"] .status {
+  color: #fde047;
+  text-shadow: 0 2px 0 #451a03, 0 0 10px rgba(0,0,0,0.7);
+}
+body[data-theme="clash"] .sub,
+body[data-theme="clash"] .draws {
+  color: #fef3c7;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+body[data-theme="clash"] .holder {
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 16px, transparent 16px, transparent 32px),
+    linear-gradient(180deg, #84cc16, #65a30d);
+  border: 12px solid #d97706;
+  outline: 4px solid #451a03;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 4px #78350f, 0 14px 30px rgba(0,0,0,0.55);
+}
+body[data-theme="clash"] .cell.r::after,
+body[data-theme="clash"] .cell.b::before {
+  background: linear-gradient(90deg, #a8a29e, #d946ef, #a8a29e);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.45);
+}
+body[data-theme="clash"] .modal-card {
+  background: linear-gradient(180deg, #57534e, #292524);
+  border: 4px solid #f59e0b;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75);
+}
+body[data-theme="clash"] .modal-card h2 {
+  color: #fde047;
+  text-shadow: 0 3px 0 #451a03;
+}
+body[data-theme="clash"] .btn.next {
+  background: linear-gradient(180deg, #84cc16, #4d7c0f);
+  color: #fff;
+  border: 2px solid #bef264;
+  box-shadow: 0 5px 0 #365314;
+}
+
+/* ================================================================ THEME 5: STAR WARS */
+body[data-theme="starwars"] {
+  --x: #ff2a2a;
+  --o: #38bdf8;
+  --card: #111827;
+  --edge: #4b5563;
+  --board: #0f172a;
+  --board-edge: #64748b;
+  --grid: #38bdf8;
+  --muted: #9ca3af;
+  --gold: #facc15;
+  --font: "Orbitron", sans-serif;
+  background:
+    radial-gradient(1.5px 1.5px at 15% 25%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 35% 80%, #bae6fd, transparent),
+    radial-gradient(2px 2px at 72% 20%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 85% 68%, #fff, transparent),
+    radial-gradient(circle at 50% 50%, #1e293b 0%, #030712 85%);
+  background-attachment: fixed;
+}
+body[data-theme="starwars"] .title {
+  color: #facc15;
+  font-size: 30px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.55);
+}
+body[data-theme="starwars"] .btn,
+body[data-theme="starwars"] .icon-btn,
+body[data-theme="starwars"] .card {
+  border-radius: 8px;
+}
+body[data-theme="starwars"] .btn {
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+body[data-theme="starwars"] .btn.style {
+  background: #1f2937;
+  border: 2px solid #9ca3af;
+}
+body[data-theme="starwars"] .btn.gold {
+  background: #1f2937;
+  color: #facc15;
+  border: 2px solid #ca8a04;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
+}
+body[data-theme="starwars"] .btn.primary {
+  background: linear-gradient(180deg, #991b1b, #450a0a);
+  border: 2px solid #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+}
+body[data-theme="starwars"] .btn.dark {
+  background: #111827;
+  border: 2px solid #4b5563;
+  color: #d1d5db;
+}
+body[data-theme="starwars"] .card {
+  background: linear-gradient(135deg, #1f2937, #0f172a);
+  border: 2px solid #4b5563;
+}
+body[data-theme="starwars"] .card .name { font-size: 16px; color: #e5e7eb; }
+body[data-theme="starwars"] .card .score { font-size: 28px; }
+body[data-theme="starwars"] .card.active {
+  border-color: var(--c);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--c) 70%, transparent);
+}
+body[data-theme="starwars"] .status {
+  color: #facc15;
+  font-size: 20px;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+}
+body[data-theme="starwars"] .holder {
+  background: radial-gradient(circle at center, #1e293b, #090d16);
+  border: 10px solid #475569;
+  outline: 2px solid #94a3b8;
+  border-radius: 18px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.85), 0 0 35px rgba(56, 189, 248, 0.25);
+}
+body[data-theme="starwars"] .cell.r::after {
+  background: #fff;
+  box-shadow: 0 0 8px #ff2a2a, 0 0 18px #ff2a2a, 0 0 28px #dc2626;
+}
+body[data-theme="starwars"] .cell.b::before {
+  background: #fff;
+  box-shadow: 0 0 8px #38bdf8, 0 0 18px #38bdf8, 0 0 28px #0284c7;
+}
+body[data-theme="starwars"] .modal-card {
+  background: #0f172a;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.55);
+}
+body[data-theme="starwars"] .modal-card h2 {
+  color: #facc15;
+  font-size: clamp(24px, 5vw, 38px);
+}
+body[data-theme="starwars"] .btn.next {
+  background: linear-gradient(180deg, #38bdf8, #0369a1);
+  color: #fff;
+  font-size: clamp(18px, 4vw, 28px);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+/* ---------------------------------------------------------------- small screens */
+@media (max-width: 1000px) {
+  .app { grid-template-columns: 1fr; justify-items: center; gap: 22px; }
+  .left, .right { width: min(100%, 420px); }
+  .holder { width: min(100%, 520px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

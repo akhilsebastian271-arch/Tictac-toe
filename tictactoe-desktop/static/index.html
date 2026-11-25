@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Orbitron:wght@700;900&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="neon">
+  <main class="app">
+
+    <!-- ============ left column ============ -->
+    <aside class="left">
+      <h1 class="title">TIC TAC TOE</h1>
+
+      <div class="tools">
+        <button id="styleBtn" class="btn style" type="button" title="Switch Theme">
+          <span class="dots"><i></i><i></i></span><span id="styleLabel">Neon</span>
+        </button>
+        <button id="soundBtn" class="icon-btn" type="button" aria-pressed="true" title="Sound on/off">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <polygon points="3 9 7 9 12 5 12 19 7 15 3 15" fill="currentColor"/>
+            <g class="waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+              <path d="M18.2 6a8.5 8.5 0 0 1 0 12"/>
+            </g>
+            <g class="mutex" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M16 9l5 6M21 9l-5 6"/>
+            </g>
+          </svg>
+        </button>
+      </div>
+
+      <div class="card" id="card-X" style="--c: var(--x)">
+        <span class="mark x icon" id="icon-X"></span>
+        <span class="name" data-p="X" title="Double-click to rename">Player 1</span>
+        <span class="score" id="score-X">0</span>
+      </div>
+
+      <div class="draws">Draws <b id="draws">0</b></div>
+
+      <div class="card" id="card-O" style="--c: var(--o)">
+        <span class="mark o icon" id="icon-O"></span>
+        <span class="name" data-p="O" title="Double-click to rename">Player 2</span>
+        <span class="score" id="score-O">0</span>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite">Player 1's turn</div>
+      <div class="sub" id="sub">Double-click a name to rename</div>
+
+      <button id="undoBtn" class="btn gold" type="button">Undo</button>
+    </aside>
+
+    <!-- ============ board ============ -->
+    <section class="holder" aria-label="Game board">
+      <div class="board" id="board"></div>
+      <svg class="strike" id="strike" aria-hidden="true"></svg>
+    </section>
+
+    <!-- ============ right column ============ -->
+    <aside class="right">
+      <button id="newBtn" class="btn primary" type="button">New Round</button>
+      <button id="resetBtn" class="btn dark" type="button">Reset Score</button>
+    </aside>
+
+  </main>
+
+  <!-- ============ "Player wins" pop-up ============ -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close">&times;</button>
+      <h2 id="modalTitle">Player 1 wins!</h2>
+      <button class="btn next" id="nextBtn" type="button">Next round</button>
+    </div>
+  </div>
+
+  <!-- party popper confetti -->
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script src="logic.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
